@@ -37,7 +37,7 @@
         state: "absent"
         path:  "/var/www/webtrees/data"
         force: "yes"
-    - name: "Link {{ ansible_env.WEBTREES_PATH }} to /var/www/webtrees/data if it already exists"
+    - name: "Link /var/www/webtrees/data to {{ ansible_env.WEBTREES_PATH }}"
       file:
         state: "link"
         dest:  "/var/www/webtrees/data"
