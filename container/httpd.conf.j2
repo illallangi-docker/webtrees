@@ -11,9 +11,9 @@ ServerName {{ ansible_env.WEBTREES_SERVERNAME }}:{{ ansible_env.WEBTREES_SERVERP
     Require all denied
 </Directory>
 
-DocumentRoot "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}"
+DocumentRoot "/var/www/webtrees"
 
-<Directory "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}">
+<Directory "/var/www/webtrees">
     AllowOverride None
     Require all granted
     Options Indexes FollowSymLinks

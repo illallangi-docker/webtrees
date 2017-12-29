@@ -1,6 +1,6 @@
 FROM illallangi/ansible:latest
-ENV WEBTREES_COMMIT=267093f1513da34a3fb85686f217f599effbb05c
-ENV WEBTREES_SHA256=1f99617842282d59ec302c4d5b965e9dc33b7dc57a83d779a4fb8babc239c5e6
+ENV WEBTREES_VERSION=1.7.9
+ENV WEBTREES_SHA256=9eebfefff250135bf68a07a5e7a2693919cec596d756f60762d38a18ede79c31
 COPY image/* /etc/ansible.d/image/
 RUN /usr/local/bin/ansible-runner.sh image
 

@@ -1,7 +1,8 @@
 ---
 - hosts: all
   tasks:
-    - fail:
+    - name: "Check all required variables are defined"
+      fail:
         msg: "{{ item }} is not defined. Typically you should run with: '-e {{ item }}=value'"
       when:
         - ansible_env[item] is not defined
@@ -22,7 +23,8 @@
         - "WEBTREES_DB_NAME"
         - "WEBTREES_DB_PREFIX"
         - "WEBTREES_LANG"
-    - file:
+    - name: "Set permissions on /run/httpd and {{ ansible_env.WEBTREES_PATH }}"
+      file:
         path: "{{ item }}"
         state: "directory"
         owner:  "{{ ansible_env.USER | default('docker') }}"
@@ -30,13 +32,15 @@
       with_items:
         - "/run/httpd"
         - "{{ ansible_env.WEBTREES_PATH }}"
-    - file:
+    - name: "Remove /var/www/webtrees/data if it already exists"
+      file:
         state: "absent"
-        path:  "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/data"
+        path:  "/var/www/webtrees/data"
         force: "yes"
-    - file:
+    - name: "Link {{ ansible_env.WEBTREES_PATH }} to /var/www/webtrees/data if it already exists"
+      file:
         state: "link"
-        dest:  "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/data"
+        dest:  "/var/www/webtrees/data"
         src:   "{{ ansible_env.WEBTREES_PATH }}"
         force: "yes"
     - template:
@@ -68,6 +72,5 @@
         sleep: 60
     - command: /usr/bin/php /usr/local/bin/webtrees-setup.php setup.php
       args:
-        chdir:   "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}"
-        creates: "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/config.ini.php"
-      register: setup
+        chdir:   "/var/www/webtrees"
+        creates: "/var/www/webtrees/data/config.ini.php"

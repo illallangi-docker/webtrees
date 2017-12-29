@@ -5,6 +5,7 @@
         name:  "{{ item }}"
         state: "present"
       with_items:
+        - "unzip"
         - "httpd"
         - "php"
         - "php-fpm"
@@ -13,10 +14,10 @@
         - "php-mbstring"
         - "php-xml"
     - get_url:
-        url:      "https://github.com/fisharebest/webtrees/archive/{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
-        dest:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
+        url:      "https://github.com/fisharebest/webtrees/releases/download/{{ ansible_env.WEBTREES_VERSION }}/webtrees-{{ ansible_env.WEBTREES_VERSION }}.zip"
+        dest:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_VERSION }}.zip"
         checksum: "sha256:{{ ansible_env.WEBTREES_SHA256 }}"
     - unarchive:
-        src:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
+        src:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_VERSION }}.zip"
         dest:    "/var/www/"
-        creates: "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/README.md"
+        creates: "/var/www/webtrees/README.md"
