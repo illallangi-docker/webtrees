@@ -11,5 +11,6 @@ ENV WEBTREES_DB_PORT=3306
 ENV WEBTREES_DB_PREFIX=wt_
 ENV WEBTREES_LANG=en-US
 ENV WEBTREES_PATH=/var/lib/webtrees/data
+ENV WEBTREES_MAXFILESIZE=20M
 COPY container/* /etc/ansible.d/container/
 CMD ["/usr/local/bin/webtrees-entrypoint.sh"]
