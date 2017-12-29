@@ -21,3 +21,7 @@
         src:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_VERSION }}.zip"
         dest:    "/var/www/"
         creates: "/var/www/webtrees/README.md"
+    - unarchive:
+        src:     "/usr/local/src/emjay-{{ ansible_env.WEBTREES_VERSION }}.tar.gz"
+        dest:    "/var/www/webtrees/themes"
+        creates: "/var/www/webtrees/themes/emjay/theme.php"
