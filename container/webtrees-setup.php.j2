@@ -1,0 +1,25 @@
+<?php
+
+if (!file_exists('setup.php'))
+{
+  die ('setup.php is not a file');
+}
+
+$_POST['lang'] = $_SERVER['WEBTREES_LANG'];
+$_POST['dbhost'] = $_SERVER['WEBTREES_DB_HOST'];
+$_POST['dbport'] = $_SERVER['WEBTREES_DB_PORT'];
+$_POST['dbuser'] = $_SERVER['WEBTREES_DB_USER'];
+$_POST['dbpass'] = $_SERVER['WEBTREES_DB_PASSWORD'];
+$_POST['dbname'] = $_SERVER['WEBTREES_DB_NAME'];
+$_POST['tblpfx'] = $_SERVER['WEBTREES_DB_PREFIX'];
+$_POST['wtname'] = $_SERVER['WEBTREES_ADMIN_NAME'];
+$_POST['wtuser'] = $_SERVER['WEBTREES_ADMIN_USER'];
+$_POST['wtpass'] = $_SERVER['WEBTREES_ADMIN_PASSWORD'];
+$_POST['wtpass2'] = $_SERVER['WEBTREES_ADMIN_PASSWORD'];
+$_POST['wtemail'] = $_SERVER['WEBTREES_ADMIN_EMAIL'];
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+$_SERVER['SERVER_NAME'] = $_SERVER['WEBTREES_SERVERNAME'];
+
+include('setup.php');
+
+var_dump($_POST);

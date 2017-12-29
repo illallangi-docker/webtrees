@@ -1,0 +1,50 @@
+ServerRoot "/etc/httpd"
+Listen {{ ansible_env.WEBTREES_SERVERPORT }}
+Include conf.modules.d/*.conf
+User {{ ansible_env.USER | default('docker') }}
+Group {{ ansible_env.GROUP | default(ansible_env.USER | default('docker')) }}
+ServerAdmin {{ ansible_env.WEBTREES_SERVERADMIN }}
+ServerName {{ ansible_env.WEBTREES_SERVERNAME }}:{{ ansible_env.WEBTREES_SERVERPORT }}
+
+<Directory />
+    AllowOverride none
+    Require all denied
+</Directory>
+
+DocumentRoot "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}"
+
+<Directory "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}">
+    AllowOverride None
+    Require all granted
+    Options Indexes FollowSymLinks
+</Directory>
+
+<IfModule dir_module>
+    DirectoryIndex index.html
+</IfModule>
+
+<Files ".ht*">
+    Require all denied
+</Files>
+
+ErrorLog "|$cat"
+TransferLog "|$cat"
+
+LogLevel warn
+
+<IfModule mime_module>
+    TypesConfig /etc/mime.types
+    AddType application/x-compress .Z
+    AddType application/x-gzip .gz .tgz
+    AddType text/html .shtml
+    AddOutputFilter INCLUDES .shtml
+</IfModule>
+
+AddDefaultCharset UTF-8
+
+<IfModule mime_magic_module>
+    MIMEMagicFile conf/magic
+</IfModule>
+
+EnableSendfile on
+IncludeOptional conf.d/*.conf

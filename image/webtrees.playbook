@@ -1,0 +1,22 @@
+---
+- hosts: all
+  tasks:
+    - yum:
+        name:  "{{ item }}"
+        state: "present"
+      with_items:
+        - "httpd"
+        - "php"
+        - "php-fpm"
+        - "php-gd"
+        - "php-mysql"
+        - "php-mbstring"
+        - "php-xml"
+    - get_url:
+        url:      "https://github.com/fisharebest/webtrees/archive/{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
+        dest:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
+        checksum: "sha256:{{ ansible_env.WEBTREES_SHA256 }}"
+    - unarchive:
+        src:     "/usr/local/src/webtrees-{{ ansible_env.WEBTREES_COMMIT }}.tar.gz"
+        dest:    "/var/www/"
+        creates: "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/README.md"

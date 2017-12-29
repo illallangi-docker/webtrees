@@ -1,0 +1,73 @@
+---
+- hosts: all
+  tasks:
+    - fail:
+        msg: "{{ item }} is not defined. Typically you should run with: '-e {{ item }}=value'"
+      when:
+        - ansible_env[item] is not defined
+      with_items:
+        - "WEBTREES_SERVERADMIN"
+        - "WEBTREES_SERVERNAME"
+        - "WEBTREES_SERVERPORT"
+        - "WEBTREES_PATH"
+        - "WEBTREES_TIMEZONE"
+        - "WEBTREES_ADMIN_USER"
+        - "WEBTREES_ADMIN_EMAIL"
+        - "WEBTREES_ADMIN_PASSWORD"
+        - "WEBTREES_ADMIN_NAME"
+        - "WEBTREES_DB_HOST"
+        - "WEBTREES_DB_PORT"
+        - "WEBTREES_DB_USER"
+        - "WEBTREES_DB_PASSWORD"
+        - "WEBTREES_DB_NAME"
+        - "WEBTREES_DB_PREFIX"
+        - "WEBTREES_LANG"
+    - file:
+        path: "{{ item }}"
+        state: "directory"
+        owner:  "{{ ansible_env.USER | default('docker') }}"
+        group: "{{ ansible_env.GROUP | default(ansible_env.USER | default('docker')) }}"
+      with_items:
+        - "/run/httpd"
+        - "{{ ansible_env.WEBTREES_PATH }}"
+    - file:
+        state: "absent"
+        path:  "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/data"
+        force: "yes"
+    - file:
+        state: "link"
+        dest:  "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/data"
+        src:   "{{ ansible_env.WEBTREES_PATH }}"
+        force: "yes"
+    - template:
+        src: "{{ item.name }}.j2"
+        dest: "{{ item.path }}/{{ item.name }}"
+        owner:  "{{ ansible_env.USER | default('docker') }}"
+        group: "{{ ansible_env.GROUP | default(ansible_env.USER | default('docker')) }}"
+        mode:  "{{ item.mode | default('0644') }}"
+      with_items:
+        - name: "webtrees-entrypoint.sh"
+          path: "/usr/local/bin"
+          mode: "0755"
+        - name: "webtrees-setup.php"
+          path: "/usr/local/bin"
+          mode: "0644"
+        - name:  "httpd.conf"
+          path:  "/etc/httpd/conf"
+          mode:  "0644"
+          owner: "root"
+          group: "root"
+        - name:  "php.ini"
+          path:  "/etc"
+          mode:  "0644"
+          owner: "root"
+          group: "root"
+    - wait_for:
+        host:  "{{ ansible_env.WEBTREES_DB_HOST }}"
+        port:  "{{ ansible_env.WEBTREES_DB_PORT }}"
+        sleep: 60
+    - command: /usr/bin/php /usr/local/bin/webtrees-setup.php setup.php
+      args:
+        chdir:   "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}"
+        creates: "/var/www/webtrees-{{ ansible_env.WEBTREES_COMMIT }}/config.ini.php"
+      register: setup
